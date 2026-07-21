@@ -1,0 +1,202 @@
+x`<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Birthday Surprise</title>
+    <style>
+        :root {
+            --bg-color: #fce4ec;
+            --accent-color: #d81b60;
+            --text-color: #4a148c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        /* --- Passcode Screen --- */
+        #passcode-screen h2 { margin-bottom: 20px; }
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .key {
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .key:active { background: #ddd; }
+        .dots { font-size: 24px; letter-spacing: 10px; margin-bottom: 10px; height: 30px; }
+
+        /* --- Gift Selection Screen --- */
+        .hidden { display: none; }
+        .gift-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .gift {
+            font-size: 50px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .gift:hover { transform: scale(1.2); }
+
+        /* --- Content Screens --- */
+        .content-card {
+            animation: fadeIn 1s ease-in;
+        }
+        .image-placeholder {
+            width: 100%;
+            height: 220px;
+            background: #eee;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border: 2px dashed #ccc;
+            overflow: hidden;
+        }
+        .content-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .btn-back {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div id="passcode-screen" class="container">
+        <h2>Enter Passcode</h2>
+        <div class="dots" id="pass-dots"></div>
+        <div class="keypad">
+            <div class="key" onclick="press(1)">1</div>
+            <div class="key" onclick="press(2)">2</div>
+            <div class="key" onclick="press(3)">3</div>
+            <div class="key" onclick="press(4)">4</div>
+            <div class="key" onclick="press(5)">5</div>
+            <div class="key" onclick="press(6)">6</div>
+            <div class="key" onclick="press(7)">7</div>
+            <div class="key" onclick="press(8)">8</div>
+            <div class="key" onclick="press(9)">9</div>
+            <div></div>
+            <div class="key" onclick="press(0)">0</div>
+            <div class="key" onclick="clearPass()">C</div>
+        </div>
+        <p id="error-msg" style="color: red;"></p>
+    </div>
+
+    <div id="gift-screen" class="container hidden">
+        <h2>Pick a Gift! 🎁</h2>
+        <div class="gift-container">
+            <div class="gift" onclick="showContent(1)">🎁</div>
+            <div class="gift" onclick="showContent(2)">🎁</div>
+            <div class="gift" onclick="showContent(3)">🎁</div>
+        </div>
+    </div>
+
+    <div id="content-1" class="container hidden content-card">
+        <div class="image-placeholder">
+            <img class="content-image" src="Screenshot_20260719_122003.jpg" alt="Birthday surprise photo 1">
+        </div>
+        <h3>Happy Birthday!</h3>
+        <p>Your custom message goes here. Tell them how much you appreciate them!</p>
+        <button class="btn-back" onclick="backToGifts()">Back</button>
+    </div>
+
+    <div id="content-2" class="container hidden content-card">
+        <div class="image-placeholder">
+            <img class="content-image" src="Screenshot_20260719_133533.jpg" alt="Birthday surprise photo 2">
+        </div>
+        <h3>Our Best Memory</h3>
+        <p>Recall a special moment you shared together.</p>
+        <button class="btn-back" onclick="backToGifts()">Back</button>
+    </div>
+
+    <div id="content-3" class="container hidden content-card">
+        <div class="image-placeholder">
+            <img class="content-image" src="Snapchat-1301446241.jpg" alt="Birthday surprise photo 3">
+        </div>
+        <h3>The Wish</h3>
+        <p>Make a wish or leave a final sweet note.</p>
+        <button class="btn-back" onclick="backToGifts()">Back</button>
+    </div>
+
+    <script>
+        const CORRECT_CODE = "2207"; // SET YOUR PASSCODE HERE
+        let currentInput = "";
+
+        function press(num) {
+            if (currentInput.length < 4) {
+                currentInput += num;
+                document.getElementById('pass-dots').innerText = "•".repeat(currentInput.length);
+            }
+            if (currentInput.length === 4) {
+                checkPass();
+            }
+        }
+
+        function clearPass() {
+            currentInput = "";
+            document.getElementById('pass-dots').innerText = "";
+        }
+
+        function checkPass() {
+            if (currentInput === CORRECT_CODE) {
+                document.getElementById('passcode-screen').classList.add('hidden');
+                document.getElementById('gift-screen').classList.remove('hidden');
+            } else {
+                document.getElementById('error-msg').innerText = "Wrong passcode! Try again.";
+                clearPass();
+            }
+        }
+
+        function showContent(id) {
+            document.getElementById('gift-screen').classList.add('hidden');
+            document.getElementById(`content-${id}`).classList.remove('hidden');
+        }
+
+        function backToGifts() {
+            document.querySelectorAll('.content-card').forEach(el => el.classList.add('hidden'));
+            document.getElementById('gift-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
